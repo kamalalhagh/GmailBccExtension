@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Gmail BCC Sender</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f17;
+      --surface: #141720;
+      --surface2: #1c2030;
+      --border: #252b3b;
+      --accent: #4f6ef7;
+      --accent2: #7c3aed;
+      --green: #22d3a0;
+      --red: #f75050;
+      --yellow: #f5c542;
+      --text: #e8eaf0;
+      --muted: #6b728e;
+      --sans: 'Syne', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    html, body {
+      width: 480px;
+      min-height: 560px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+    }
+
+    /* ── GLOW ── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 300px;
+      background: radial-gradient(ellipse, rgba(79,110,247,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: 0.95rem; letter-spacing: -0.02em;
+    }
+    .logo-dot {
+      width: 22px; height: 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 6px;
+    }
+    .user-chip {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+      max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 20px; flex-direction: column; gap: 16px; }
+    .page.active { display: flex; }
+
+    /* ── AUTH PAGE ── */
+    .auth-hero { text-align: center; padding: 24px 0 8px; }
+    .auth-hero h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.2; }
+    .auth-hero h1 em { font-style: normal; color: var(--accent); }
+    .auth-hero p { color: var(--muted); font-size: 0.85rem; margin-top: 8px; line-height: 1.6; }
+
+    .setup-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .setup-title {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 2px;
+    }
+    .step { display: flex; align-items: flex-start; gap: 10px; font-size: 0.82rem; line-height: 1.5; }
+    .step-n {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 0.65rem; color: var(--accent);
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    .client-id-input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: var(--mono);
+      font-size: 0.78rem; padding: 9px 12px; outline: none;
+      transition: border-color 0.15s;
+    }
+    .client-id-input:focus { border-color: var(--accent); }
+    .client-id-input::placeholder { color: var(--muted); }
+
+    .redirect-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--yellow);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      word-break: break-all;
+    }
+    .copy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 4px 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.1s;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: var(--sans); font-weight: 600;
+      border: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.15s; border-radius: 9px; white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 0.9rem; padding: 11px 20px; width: 100%;
+    }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-green {
+      background: linear-gradient(135deg, var(--green), #0ea5e9);
+      color: #000; font-size: 0.9rem; padding: 11px 20px; width: 100%;
+    }
+    .btn-green:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-sm {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text); font-size: 0.75rem; padding: 6px 12px;
+    }
+    .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-link {
+      background: none; border: none;
+      color: var(--muted); font-size: 0.75rem;
+      font-family: var(--mono); cursor: pointer; padding: 0;
+      text-decoration: underline;
+    }
+    .btn-link:hover { color: var(--accent); }
+
+    /* ── SENDER LIST ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .section-label {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+    .badge {
+      font-family: var(--mono); font-size: 0.68rem;
+      padding: 3px 10px; border-radius: 99px;
+      background: rgba(79,110,247,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(79,110,247,0.2);
+    }
+
+    .search-input {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: var(--mono);
+      font-size: 0.8rem; padding: 8px 12px; outline: none;
+      transition: border-color 0.15s; margin-bottom: 8px;
+    }
+    .search-input:focus { border-color: var(--accent); }
+
+    .select-row {
+      display: flex; gap: 6px; align-items: center; margin-bottom: 8px;
+    }
+    .select-count {
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--muted); margin-left: auto;
+    }
+
+    .sender-list {
+      height: 200px; overflow-y: auto;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface);
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .sender-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; cursor: pointer;
+      border-bottom: 1px solid rgba(37,43,59,0.5);
+      transition: background 0.1s;
+    }
+    .sender-item:last-child { border-bottom: none; }
+    .sender-item:hover { background: var(--surface2); }
+    .sender-item input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0; }
+    .sender-email { font-family: var(--mono); font-size: 0.75rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sender-name { font-size: 0.73rem; color: var(--muted); flex-shrink: 0; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .empty-state { padding: 32px; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+    /* ── COMPOSE ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .field input, .field textarea {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-family: var(--mono); font-size: 0.82rem;
+      padding: 9px 12px; outline: none; transition: border-color 0.15s;
+    }
+    .field input:focus, .field textarea:focus { border-color: var(--accent); }
+    .field textarea { min-height: 100px; resize: vertical; }
+
+    /* ── PROGRESS ── */
+    .progress-bar {
+      height: 2px; background: var(--border); border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px; transition: width 0.4s;
+    }
+
+    /* ── STATUS ── */
+    .status-msg {
+      font-family: var(--mono); font-size: 0.75rem;
+      padding: 9px 12px; border-radius: 8px; text-align: center;
+      display: none;
+    }
+    .status-msg.success { background: rgba(34,211,160,0.1); color: var(--green); border: 1px solid rgba(34,211,160,0.2); display: block; }
+    .status-msg.error { background: rgba(247,80,80,0.1); color: var(--red); border: 1px solid rgba(247,80,80,0.2); display: block; }
+    .status-msg.info { background: rgba(79,110,247,0.1); color: var(--accent); border: 1px solid rgba(79,110,247,0.2); display: block; }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: currentColor; border-radius: 50%;
+      animation: spin 0.6s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 10px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-info { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    BCC Sender
+  </div>
+  <div id="headerRight"></div>
+</header>
+
+<!-- ══════════ PAGE: SETUP ══════════ -->
+<div class="page active" id="page-setup">
+  <div class="auth-hero">
+    <h1>Send to <em>everyone</em><br>no one sees a thing</h1>
+    <p>Enter your Google OAuth Client ID to connect your Gmail.</p>
+  </div>
+
+  <div class="setup-box">
+    <div class="setup-title">One-time Setup</div>
+    <div class="step"><div class="step-n">1</div><span>Go to <strong>console.cloud.google.com</strong> → New Project → Enable Gmail API</span></div>
+    <div class="step"><div class="step-n">2</div><span>Create OAuth credentials → Type: <strong>Web Application</strong></span></div>
+    <div class="step"><div class="step-n">3</div><span>Add this URL as an <strong>Authorised Redirect URI</strong>:</span></div>
+
+    <div class="redirect-box">
+      <span id="redirectUriDisplay">Loading...</span>
+      <button class="copy-btn" id="copyBtn">Copy</button>
+    </div>
+
+    <div class="step"><div class="step-n">4</div><span>Copy your <strong>Client ID</strong> and paste it below</span></div>
+    <input class="client-id-input" id="clientIdInput" type="text" placeholder="Paste Client ID here  (e.g. 123456-xxxx.apps.googleusercontent.com)"/>
+
+    <div class="step"><div class="step-n">5</div><span>Add your Gmail as a <strong>Test User</strong> in OAuth consent screen</span></div>
+  </div>
+
+  <div id="setupStatus" class="status-msg"></div>
+  <button class="btn btn-primary" id="connectBtn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+    Connect Gmail
+  </button>
+</div>
+
+<!-- ══════════ PAGE: MAIN ══════════ -->
+<div class="page" id="page-main">
+
+  <!-- Fetch senders -->
+  <div>
+    <div class="section-header">
+      <div class="section-label">Inbox Senders</div>
+      <span id="totalBadge" class="badge" style="display:none;"></span>
+    </div>
+
+    <button class="btn btn-sm" id="fetchBtn" style="margin-bottom:10px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      <span id="fetchBtnText">Fetch Senders from Inbox</span>
+    </button>
+
+    <div id="fetchProgress" class="progress-bar" style="display:none; margin-bottom:8px;">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div id="senderSection" style="display:none;">
+      <input class="search-input" id="searchInput" placeholder="Search email or name..."/>
+      <div class="select-row">
+        <button class="btn btn-sm" id="selectAllBtn">All</button>
+        <button class="btn btn-sm" id="deselectAllBtn">None</button>
+        <span class="select-count" id="selectedCount">0 selected</span>
+      </div>
+      <div class="sender-list" id="senderList"></div>
+    </div>
+  </div>
+
+  <!-- Compose -->
+  <div class="field">
+    <label class="field-label">Subject</label>
+    <input type="text" id="subject" placeholder="Email subject..."/>
+  </div>
+  <div class="field">
+    <label class="field-label">Message</label>
+    <textarea id="body" placeholder="Write your message here..."></textarea>
+  </div>
+
+  <div id="sendStatus" class="status-msg"></div>
+
+  <button class="btn btn-green" id="sendBtn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    Send BCC to Selected
+  </button>
+</div>
+
+<footer>
+  <span class="footer-info" id="footerInfo">v1.0</span>
+  <button class="btn-link" id="disconnectBtn" style="display:none;">Disconnect</button>
+</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>
