@@ -1,6 +1,16 @@
 # 📧 Gmail BCC Sender — Chrome Extension
 
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg) ![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-yellow.svg)
+
 A Chrome extension to send one email to all your Gmail inbox senders at once via BCC. No one sees each other's address.
+
+---
+
+## 💡 Why I Built This
+
+One day I opened my inbox and had **180 unread emails** that all needed the same reply. I wanted to send one message to everyone at once — but without them seeing each other's addresses. Gmail has no built-in way to do this. Copy-pasting 180 email addresses into BCC manually wasn't an option.
+
+So I built this extension. One click fetches everyone from your inbox automatically, one message goes to all of them — privately.
 
 ---
 
