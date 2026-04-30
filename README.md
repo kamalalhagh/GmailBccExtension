@@ -1,4 +1,4 @@
-# 📧 Gmail BCC Sender — Chrome Extension
+# 📧 Gmail BCC Sender, Chrome Extension
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg) ![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-yellow.svg)
 
@@ -8,9 +8,9 @@ A Chrome extension to send one email to all your Gmail inbox senders at once via
 
 ## 💡 Why I Built This
 
-One day I opened my inbox and had **180 unread emails** that all needed the same reply. I wanted to send one message to everyone at once — but without them seeing each other's addresses. Gmail has no built-in way to do this. Copy-pasting 180 email addresses into BCC manually wasn't an option.
+One day I opened my inbox and had **180 unread emails** that all needed the same reply. I wanted to send one message to everyone at once, but without them seeing each other's addresses. Gmail has no built-in way to do this. Copy-pasting 180 email addresses into BCC manually wasn't an option.
 
-So I built this extension. One click fetches everyone from your inbox automatically, one message goes to all of them — privately.
+So I built this extension. One click fetches everyone from your inbox automatically, one message goes to all of them, privately.
 
 ---
 
@@ -19,11 +19,11 @@ So I built this extension. One click fetches everyone from your inbox automatica
 - Scans your Gmail inbox and extracts all unique sender addresses automatically
 - Shows a searchable, checkable list of everyone who emailed you
 - Sends your message to all selected people via BCC (they can't see each other)
-- Works entirely in your browser — no server, no Python, no terminal
+- Works entirely in your browser, no server, no Python, no terminal
 
 ---
 
-## 🔑 Step 1 — Get Google OAuth Credentials (~5 minutes)
+## 🔑 Step 1, Get Google OAuth Credentials (~5 minutes)
 
 1. Go to → **https://console.cloud.google.com/**
 2. Click **Select a project → New Project** → give it any name → **Create**
@@ -31,17 +31,17 @@ So I built this extension. One click fetches everyone from your inbox automatica
 4. Left menu → **APIs & Services → OAuth consent screen**
    - Choose **External** → **Create**
    - Fill in App name (e.g. "BCC Sender") and your email → **Save and Continue** through all steps
-   - ⚠️ **Do NOT skip adding a Test User** — see Step 4 below
+   - ⚠️ **Do NOT skip adding a Test User**, see Step 4 below
 5. Left menu → **APIs & Services → Credentials**
    - Click **+ Create Credentials → OAuth client ID**
    - Application type: **Web application**
    - Name: anything
-   - Under **Authorised redirect URIs** — you'll add the URL shown in the extension (Step 3 below)
+   - Under **Authorised redirect URIs**, you'll add the URL shown in the extension (Step 3 below)
    - Click **Create** → copy the **Client ID**
 
 ---
 
-## 🧩 Step 2 — Load the Extension in Chrome
+## 🧩 Step 2, Load the Extension in Chrome
 
 1. Open Chrome and go to → `chrome://extensions/`
 2. Enable **Developer mode** (toggle in the top right)
@@ -51,18 +51,18 @@ So I built this extension. One click fetches everyone from your inbox automatica
 
 ---
 
-## 🔗 Step 3 — Add Redirect URI to Google
+## 🔗 Step 3, Add Redirect URI to Google
 
 1. Click the extension icon in Chrome toolbar → the popup opens
-2. You'll see a **yellow URL** like `https://xxxx.chromiumapp.org/` — click **Copy**
+2. You'll see a **yellow URL** like `https://xxxx.chromiumapp.org/`, click **Copy**
 3. Go back to **Google Cloud Console → Credentials → your OAuth client**
 4. Click the pencil (edit) icon → under **Authorised redirect URIs** → **Add URI** → paste it → **Save**
 
 ---
 
-## 👤 Step 4 — Add Yourself as a Test User
+## 👤 Step 4, Add Yourself as a Test User
 
-> ⚠️ This step is required — without it you will get `Error 403: access_denied` even with your own app.
+> ⚠️ This step is required, without it you will get `Error 403: access_denied` even with your own app.
 
 Google's console was recently redesigned. The Test Users section has **moved**:
 
@@ -87,15 +87,15 @@ Or go directly to: **https://console.cloud.google.com/auth/audience**
 
 ---
 
-## 🚀 Step 5 — Connect & Use
+## 🚀 Step 5, Connect & Use
 
 1. Click the extension icon
 2. Paste your **Client ID** into the field
 3. Click **Connect Gmail** → log in with your Google account → Allow
-4. Click **Fetch Senders from Inbox** — it scans your inbox automatically
+4. Click **Fetch Senders from Inbox**, it scans your inbox automatically
 5. Search, select/deselect who you want to email
 6. Write your **Subject** and **Message**
-7. Click **Send BCC to Selected** — done ✅
+7. Click **Send BCC to Selected**, done ✅
 
 ---
 
@@ -108,14 +108,14 @@ Or go directly to: **https://console.cloud.google.com/auth/audience**
 
 ---
 
-## ❓ Troubleshooting — Real Issues & Fixes
+## ❓ Troubleshooting, Real Issues & Fixes
 
 These are issues encountered during real setup, with exact fixes.
 
-### `Error 403: access_denied` — "app has not completed Google verification"
-Your Gmail is not added as a Test User. Go to **Google Auth Platform → Audience → Test users → Add users** and add your Gmail. See Step 4 above — the UI was recently redesigned and the old "OAuth consent screen" path no longer shows this section in the same place.
+### `Error 403: access_denied`, "app has not completed Google verification"
+Your Gmail is not added as a Test User. Go to **Google Auth Platform → Audience → Test users → Add users** and add your Gmail. See Step 4 above, the UI was recently redesigned and the old "OAuth consent screen" path no longer shows this section in the same place.
 
-### `Error 400: policy_enforced` — "not approved by Advanced Protection"
+### `Error 400: policy_enforced`, "not approved by Advanced Protection"
 Your Google account has **Advanced Protection** enabled (a high-security mode that blocks all third-party OAuth apps). Two options:
 - **Option A (recommended):** Use a different regular Gmail account as your test account
 - **Option B:** Unenroll from Advanced Protection at `myaccount.google.com/advanced-protection/enrolled`
@@ -187,7 +187,7 @@ git branch -M main
 git push -u origin main
 ```
 
-> ⚠️ GitHub no longer accepts your account password when pushing. Use a **Personal Access Token** instead — create one at `github.com/settings/tokens` with the `repo` scope checked.
+> ⚠️ GitHub no longer accepts your account password when pushing. Use a **Personal Access Token** instead, create one at `github.com/settings/tokens` with the `repo` scope checked.
 
 ### 3. Future Updates
 
@@ -201,4 +201,4 @@ git push
 
 ## 🛑 Never Upload
 
-Your OAuth Client ID is entered at runtime in the extension and stored in Chrome only — it is **not** in any project file and will never be pushed to GitHub.
+Your OAuth Client ID is entered at runtime in the extension and stored in Chrome only, it is **not** in any project file and will never be pushed to GitHub.
